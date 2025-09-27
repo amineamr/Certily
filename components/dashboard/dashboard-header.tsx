@@ -20,31 +20,24 @@ interface UserData {
     id: string
     email: string
     name?: string
+    role?: string
 }
 
 export function DashboardHeader() {
-    const { userContext } = useUserContext() // ✅ get userContext from the centralized context
-    const [user, setUser] = useState<UserData | null>(null)
+    const { user } = useUserContext() // ✅ get Supabase user from context
+    const [localUser, setLocalUser] = useState<UserData | null>(null)
     const router = useRouter()
 
     useEffect(() => {
-        const getUser = async () => {
-            const supabase = createClient()
-            const {
-                data: { user },
-            } = await supabase.auth.getUser()
-
-            if (user) {
-                setUser({
-                    id: user.id,
-                    email: user.email || "",
-                    name: user.user_metadata?.name || user.email?.split("@")[0],
-                })
-            }
+        if (user) {
+            setLocalUser({
+                id: user.id,
+                email: user.email || "",
+                name: user.user_metadata?.name || user.email?.split("@")[0],
+                role: user.user_metadata?.role, // ✅ role comes from metadata
+            })
         }
-
-        getUser()
-    }, [])
+    }, [user])
 
     const handleSignOut = async () => {
         const supabase = createClient()
@@ -64,7 +57,8 @@ export function DashboardHeader() {
                     </Link>
 
                     <div className="flex items-center space-x-4">
-                        {userContext?.role !== "shop_owner" && (
+                        {/* ✅ Hide Audit button if role is shop_owner */}
+                        {localUser?.role !== "shop_owner" && (
                             <>
                                 {/* Full Audit button on medium+ screens */}
                                 <Link href="/audit" className="hidden sm:block">
@@ -92,8 +86,8 @@ export function DashboardHeader() {
                                 <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                                     <Avatar className="h-10 w-10">
                                         <AvatarFallback className="bg-accent text-accent-foreground">
-                                            {user?.name?.charAt(0).toUpperCase() ||
-                                                user?.email?.charAt(0).toUpperCase() ||
+                                            {localUser?.name?.charAt(0).toUpperCase() ||
+                                                localUser?.email?.charAt(0).toUpperCase() ||
                                                 "U"}
                                         </AvatarFallback>
                                     </Avatar>
@@ -106,8 +100,8 @@ export function DashboardHeader() {
                                 {/* User info */}
                                 <div className="flex items-center justify-start gap-2 p-2">
                                     <div className="flex flex-col space-y-1 leading-none">
-                                        <p className="font-medium text-foreground">{user?.name || "User"}</p>
-                                        <p className="w-[200px] truncate text-sm text-muted-foreground">{user?.email}</p>
+                                        <p className="font-medium text-foreground">{localUser?.name || "User"}</p>
+                                        <p className="w-[200px] truncate text-sm text-muted-foreground">{localUser?.email}</p>
                                     </div>
                                 </div>
 
