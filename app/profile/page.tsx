@@ -1,5 +1,5 @@
 // app/profile/page.tsx
-import { ServerRoleQueries } from "@/lib/supabase/server-role-queries"
+import { ServerRoleQueries } from "@/lib/server-role-queries"
 
 export default async function ProfilePage() {
   const context = await ServerRoleQueries.getUserContext()
