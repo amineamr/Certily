@@ -1,5 +1,7 @@
 // app/profile/page.tsx
 import { ServerRoleQueries } from "@/lib/server-role-queries"
+import { ArrowLeft } from "lucide-react"
+import Link from "next/link"
 
 export default async function ProfilePage() {
   const context = await ServerRoleQueries.getUserContext()
@@ -16,7 +18,15 @@ export default async function ProfilePage() {
   const { user, role, userShops, userAirports } = context
 
   return (
+    
     <div className="p-8 space-y-6">
+        {/* Back link */}
+        <div className="flex items-center space-x-2">
+            <Link href="/dashboard" className="flex items-center text-sm text-primary hover:underline">
+                <ArrowLeft className="w-4 h-4 mr-4" />
+                Retour au dashboard
+            </Link>
+        </div>
       <h1 className="text-3xl font-bold">Profile</h1>
 
       <div className="rounded-2xl shadow p-6 bg-white space-y-4">
